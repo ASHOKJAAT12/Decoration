@@ -9,7 +9,7 @@ export default function Navbar() {
     { name: 'Home', href: '/' },
     { name: 'Services', href: '/services' },
     { name: 'About us', href: '/About us' },
-    { name: 'Contact us', href: '/contact' }
+    { name: 'Contact us', href: '/Contact' }
   ]
 
   return (
