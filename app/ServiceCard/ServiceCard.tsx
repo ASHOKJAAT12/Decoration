@@ -5,13 +5,12 @@ import { Balloon, ArrowRight } from 'lucide-react'
 
 interface ServiceCardProps {
   title: string
-  price: string
   desc: string
   image: string
   href: string
 }
 
-export default function ServiceCard({ title, price, desc, image, href }: ServiceCardProps) {
+export default function ServiceCard({ title, desc, image, href }: ServiceCardProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 50 }}
@@ -27,7 +26,6 @@ export default function ServiceCard({ title, price, desc, image, href }: Service
         <h3 className="text-2xl font-bold text-gray-800 mb-4">{title}</h3>
         <p className="text-gray-600 mb-6 leading-relaxed">{desc}</p>
         <div className="flex items-center justify-between mb-6">
-          <span className="text-3xl font-bold text-primary">{price}</span>
           <Link href={href} className="flex items-center text-primary font-semibold hover:text-secondary group-hover:translate-x-2 transition-transform">
             View Details <ArrowRight className="ml-1 w-5 h-5" />
           </Link>

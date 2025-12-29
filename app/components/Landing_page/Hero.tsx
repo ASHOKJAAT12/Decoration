@@ -20,6 +20,7 @@ export default function Hero() {
           <span className="block bg-linear-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
             Celebrations
           </span>
+          
         </motion.h1>
         <motion.p 
           initial={{ opacity: 0, y: 30 }}
@@ -27,6 +28,7 @@ export default function Hero() {
           transition={{ delay: 0.2 }}
           className="text-xl md:text-2xl mb-8 opacity-90"
         >
+          {/* <div>Full Decoration services at your place</div> */}
           Professional Decoration Services for Every Occasion
         </motion.p>
         <motion.div 
