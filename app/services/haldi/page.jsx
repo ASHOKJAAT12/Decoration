@@ -1,9 +1,9 @@
 import React from 'react'
-import Anniversary from '@/app/services/anniversary/anniversary';
+import Haldi from '@/app/services/haldi/haldi'
 function page() {
   return (
     <>
-      <Anniversary />
+      <Haldi />
     </>
   )
 }

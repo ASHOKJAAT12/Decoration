@@ -1,15 +1,15 @@
 const services = [
   {
-    image: '/newborn-photos/N1.png'
+    image: '/newborn-photo/N1.png'
   },
   {
-    image: '/newborn-photos/N2.png',
+    image: '/newborn-photo/N2.png',
   },
   {
-    image: '/newborn-photos/N3.png',
+    image: '/newborn-photo/N3.png',
   },
   {
-    image: '/newborn-photos/N4.png',
+    image: '/newborn-photo/N4.png',
   }
 ]
 

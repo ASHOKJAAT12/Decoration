@@ -1,27 +1,27 @@
 const services = [
   {
-    image: '/Birthday-photos/B1.png'
+    image: '/Birthday-photo/B1.png'
   },
   {
-    image: '/Birthday-photos/B2.png',
+    image: '/Birthday-photo/B2.png',
   },
   {
-    image: '/Birthday-photos/B3.png',
+    image: '/Birthday-photo/B3.png',
   },
   {
-    image: '/Birthday-photos/B4.png',
+    image: '/Birthday-photo/B4.png',
   },
   {
-    image: '/Birthday-photos/B5.png',
+    image: '/Birthday-photo/B5.png',
   },
   {
-    image: '/Birthday-photos/B6.png',
+    image: '/Birthday-photo/B6.png',
   },
   {
-    image: '/Birthday-photos/B7.png',
+    image: '/Birthday-photo/B7.png',
   },
   {
-    image: '/Birthday-photos/B8.png',
+    image: '/Birthday-photo/B8.png',
   }
 ]
 

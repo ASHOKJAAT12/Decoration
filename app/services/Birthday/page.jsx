@@ -1,4 +1,4 @@
-import Birthday from '@/app/services/Birthday/birthday';
+import Birthday from '@/app/services/birthday/birthday';
 function page() {
   return (
     <>

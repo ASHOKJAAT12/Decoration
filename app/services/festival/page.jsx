@@ -1,9 +1,9 @@
 import React from 'react'
-import Anniversary from '@/app/services/anniversary/anniversary';
+import Festival from '@/app/services/festival/festival'
 function page() {
   return (
     <>
-      <Anniversary />
+      <Festival />
     </>
   )
 }

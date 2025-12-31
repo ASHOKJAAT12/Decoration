@@ -25,7 +25,7 @@ const services = [
   }
 ]
 
-export default function anniversary() {
+export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
 

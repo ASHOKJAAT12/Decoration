@@ -4,44 +4,44 @@ const services = [
   {
     title: 'Birthday Decoration',
     desc: 'Hidden room setup, balloon arches, happy birthday backdrop',
-    image: '/Birthday-photos/B1.png',
-    href: './services/Birthday'
+    image: '/Birthday-photo/B1.png',
+    href: '/services/birthday'
   },
   {
     title: 'Anniversary Decoration',
     desc: 'Romantic setup with hearts, rose gold balloons, candlelight',
     image: '/anniversary-photo/A1.png',
-    href: '/anniversary'
+    href: '/services/anniversary'
   },
   {
     title: 'Newborn Welcome',
     desc: 'Organic garlands, name backdrop, baby-safe balloons',
-    image: '/newborn/N1.png',
-    href: '/newborn'
+    image: '/newborn-photo/N1.png',
+    href: '/services/newborn'
   },
   {
     title: 'Kids Birthday Party Decoration',
     desc: 'Jungle, Unicorn, Superhero themes with entry gates',
     image: '/kids-photo/K1.png',
-    href: '/kids'
+    href: '/services/kids'
   },
   {
     title: 'Engagement Decoration',
     desc: 'Romantic setup with hearts, rose gold balloons, candlelight',
     image: '/engagement-photo/E2.png',
-    href: '/engagement'
+    href: '/services/engagement'
   },
   {
     title: 'Haldi Ceremony Decoration',
     desc: 'Vibrant yellow and orange decor with floral accents',
     image: '/haldi-photo/H1.png',
-    href: '/haldi'
+    href: '/services/haldi'
   },
   {
     title: 'Festival Decoration',
     desc: 'Traditional decor for Diwali, Christmas, Eid, and more',
     image: '/festival-photo/F1.png',
-    href: '/festival'
+    href: '/services/festival'
   }
 ]
 
