@@ -45,7 +45,7 @@ export default function Hero() {
           </Link> */}
           <Link 
             href="/services"
-            className="px-8 py-4 border-2 hover:text-black border-white text-white font-bold rounded-full text-lg hover:bg-white hover:text-primary transition-all duration-300"
+            className="px-8 py-4 border-2 hover:text-black border-white text-white font-bold rounded-full text-lg hover:bg-white transition-all duration-300"
           >
             View Services
           </Link>

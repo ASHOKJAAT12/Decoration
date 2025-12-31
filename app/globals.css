@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 /* @theme block defines custom CSS variables for Tailwind CSS v4 theming, mapping design tokens for consistent styling across components */
 @theme {
   /* Font variables - Define sans and mono fonts using Geist family for consistent typography across the application */

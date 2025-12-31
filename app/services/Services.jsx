@@ -2,7 +2,7 @@ import ServiceCard from '@/app/ui/ServiceCard';
 
 const services = [
   {
-    title: 'Surprise Birthday Decoration',
+    title: 'Birthday Decoration',
     desc: 'Hidden room setup, balloon arches, happy birthday backdrop',
     image: '/birthday.jpg',
     href: '/birthday'
@@ -20,10 +20,28 @@ const services = [
     href: '/newborn'
   },
   {
-    title: 'Kids Theme Party',
+    title: 'Kids Birthday Party Decoration',
     desc: 'Jungle, Unicorn, Superhero themes with entry gates',
     image: '/kids.jpg',
     href: '/kids'
+  },
+  {
+    title: 'Engagement Decoration',
+    desc: 'Romantic setup with hearts, rose gold balloons, candlelight',
+    image: '/engagement.jpg',
+    href: '/engagement'
+  },
+  {
+    title: 'Haldi Ceremony Decoration',
+    desc: 'Vibrant yellow and orange decor with floral accents',
+    image: '/haldi.jpg',
+    href: '/haldi'
+  },
+  {
+    title: 'Festival Decoration',
+    desc: 'Traditional decor for Diwali, Christmas, Eid, and more',
+    image: '/festival.jpg',
+    href: '/festival'
   }
 ]
 
