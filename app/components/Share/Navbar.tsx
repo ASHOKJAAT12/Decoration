@@ -15,11 +15,11 @@ export default function Navbar() {
   ]
 
   const services = [
-    { name: 'Birthday Decoration', href: '/birthday' },
-    { name: 'Anniversary Setup', href: '/anniversary' },
-    { name: 'Kids Party', href: '/kids' },
-    { name: 'Newborn Welcome', href: '/newborn' },
-    { name: 'Engagement Party', href: '/engagement' }
+    { name: 'Birthday Decoration', href: '/services/birthday' },
+    { name: 'Anniversary Setup', href: '/services/anniversary' },
+    { name: 'Kids Party', href: '/services/kids' },
+    { name: 'Newborn Welcome', href: '/services/newborn' },
+    { name: 'Engagement Party', href: '/services/engagement' }
   ]
 
   return (

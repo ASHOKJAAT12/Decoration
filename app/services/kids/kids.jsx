@@ -1,30 +1,30 @@
 const services = [
   {
-    image: '/kids-photos/K1.png'
+    image: '/kids-photo/K1.png'
   },
   {
-    image: '/kids-photos/K2.png',
+    image: '/kids-photo/K2.png',
   },
   {
-    image: '/kids-photos/K3.png',
+    image: '/kids-photo/K3.png',
   },
   {
-    image: '/kids-photos/K4.png',
+    image: '/kids-photo/K4.png',
   },
   {
-    image: '/kids-photos/K5.png',
+    image: '/kids-photo/K5.png',
   },
   {
-    image: '/kids-photos/K6.png',
+    image: '/kids-photo/K6.png',
   },
   {
-    image: '/kids-photos/K7.png',
+    image: '/kids-photo/K7.png',
   },
   {
-    image: '/kids-photos/K8.png',
+    image: '/kids-photo/K8.png',
   },
   {
-    image: '/kids-photos/K9.png',
+    image: '/kids-photo/K9.png',
   }
 ]
 
