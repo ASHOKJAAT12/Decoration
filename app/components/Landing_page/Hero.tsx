@@ -37,12 +37,7 @@ export default function Hero() {
           transition={{ delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
-          {/* <Link 
-            href="/services" 
-            className="px-8 py-4 bg-white text-primary font-bold rounded-full text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
-          >
-            View Services
-          </Link> */}
+          
           <Link 
             href="/services"
             className="px-8 py-4 border-2 hover:text-black border-white text-white font-bold rounded-full text-lg hover:bg-white transition-all duration-300"

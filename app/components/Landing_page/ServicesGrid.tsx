@@ -4,27 +4,28 @@ const services = [
   {
     title: 'Surprise Birthday Decoration',
     desc: 'Hidden room setup, balloon arches, happy birthday backdrop',
-    image: '/birthday.jpg',
+    image: '/birthday-photo/B1.png',
     href: '/birthday'
+  },
+  {
+    title: 'Festival Decoration',
+    desc: 'Traditional decor for Diwali, Christmas, Eid, and more',
+    image: '/festival-photo/F1.png',
+    href: '/services/festival'
+  },
+  {
+    title: 'Engagement Decoration',
+    desc: 'Romantic setup with hearts, rose gold balloons, candlelight',
+    image: '/engagement-photo/E2.png',
+    href: '/services/engagement'
   },
   {
     title: 'Anniversary Decoration',
     desc: 'Romantic setup with hearts, rose gold balloons, candlelight',
-    image: '/anniversary.jpg',
-    href: '/anniversary'
-  },
-  {
-    title: 'Newborn Welcome',
-    desc: 'Organic garlands, name backdrop, baby-safe balloons',
-    image: '/newborn.jpg',
-    href: '/newborn'
-  },
-  {
-    title: 'Kids Theme Party',
-    desc: 'Jungle, Unicorn, Superhero themes with entry gates',
-    image: '/kids.jpg',
-    href: '/kids'
+    image: '/anniversary-photo/A1.png',
+    href: '/services/anniversary'
   }
+
 ]
 
 export default function ServicesGrid() {
