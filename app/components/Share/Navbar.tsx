@@ -19,6 +19,7 @@ export default function Navbar() {
     { name: 'Anniversary Setup', href: '/services/anniversary' },
     { name: 'Kids Party', href: '/services/kids' },
     { name: 'Newborn Welcome', href: '/services/newborn' },
+    { name: 'Festival', href: '/services/festival' },
     { name: 'Engagement Party', href: '/services/engagement' }
   ]
 
