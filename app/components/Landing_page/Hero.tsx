@@ -16,9 +16,9 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           className="text-5xl md:text-7xl font-bold mb-6"
         >
-          Transform Your 
+          Welcome to our 
           <span className="block bg-linear-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-            Celebrations
+            Decoration
           </span>
           
         </motion.h1>

@@ -9,8 +9,8 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Balloon Bazar - Professional Balloon Decoration Jaipur',
-  description: 'Birthday, Anniversary, Baby Shower Balloon Decorations starting ₹999'
+  title: 'DECORATION FOR YOU - Professional Decoration Services',
+  description: 'Transforming Spaces, Creating Memories - Expert Decoration Services for Every Occasion.',
 }
 
 export default function RootLayout({

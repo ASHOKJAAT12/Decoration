@@ -10,7 +10,7 @@ export default function Navbar() {
   
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
+    // { name: 'About', href: '/about' },
     { name: 'Contact us', href: '/Contact' }
   ]
 
@@ -29,11 +29,11 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="p-3 bg-linear-to-br from-primary to-secondary rounded-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
-              <Balloon className="w-7 h-7 text-white" />
+            <div className='flex items-center'>
+              <img src="/decoraforyou-logo.svg" alt="Logo" className="w-12 h-12 text-white"/>
             </div>
             <span className="text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Balloon Bazar
+              DECORATION FOR YOU
             </span>
           </Link>
 
@@ -137,7 +137,15 @@ export default function Navbar() {
                 >
                   {item.name}
                 </Link>
+                
               ))}
+              <Link
+                  href='/services'
+                  className="block px-4 py-3 text-lg font-medium text-gray-700 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Services
+                </Link>
             </div>
           </motion.div>
         )}
