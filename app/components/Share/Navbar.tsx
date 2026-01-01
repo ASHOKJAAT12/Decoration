@@ -101,7 +101,7 @@ export default function Navbar() {
             </div>
             {/* CTA Button */}
             <Link 
-              href="/contact"
+              href="/Contact"
               className="px-6 py-3 bg-linear-to-r from-primary to-secondary text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
               Book Now

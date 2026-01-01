@@ -46,7 +46,7 @@ export default function BookingSection() {
               <input
                 {...register('name', { required: true })}
                 className="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-primary focus:outline-none transition-colors"
-                placeholder="John Doe"
+                placeholder="Your Full Name"
               />
             </div>
             <div>
@@ -75,7 +75,7 @@ export default function BookingSection() {
                 type="tel"
                 {...register('phone', { required: true })}
                 className="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-primary"
-                placeholder="1234567890"
+                placeholder=""
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function BookingSection() {
               <input
                 {...register('location', { required: true })}
                 className="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-primary"
-                placeholder="Mansarovar, Vaishali Nagar, etc."
+                placeholder="Event Location"
               />
 
             </div>
