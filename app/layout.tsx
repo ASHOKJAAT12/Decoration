@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Navbar from './components/Share/Navbar';
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <SpeedInsights/>
         <Navbar />
         <main className="min-h-screen">{children}</main>
         <Toaster position="bottom-right" />
