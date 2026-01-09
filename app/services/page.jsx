@@ -1,5 +1,5 @@
 import React from 'react';
-import Services from '@/app/services/Services';
+import Services from './Services';
 
 function page() {
   return (

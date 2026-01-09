@@ -4,7 +4,7 @@ const services = [
   {
     title: 'Birthday Decoration',
     desc: 'Hidden room setup, balloon arches, happy birthday backdrop',
-    image: '/Birthday-photo/B1.png',
+    image: '/birthday-photo/B1.png',
     href: '/services/birthday'
   },
   {

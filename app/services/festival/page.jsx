@@ -1,5 +1,5 @@
 import React from 'react'
-import Festival from '@/app/services/festival/festival'
+import Festival from './festival'
 function page() {
   return (
     <>

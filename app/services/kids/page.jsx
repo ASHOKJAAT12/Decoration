@@ -1,5 +1,5 @@
 import React from 'react'
-import Kids from '@/app/services/kids/kids'
+import Kids from './kids'
 function page() {
   return (
     <>

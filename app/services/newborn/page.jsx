@@ -1,5 +1,5 @@
 import React from 'react'
-import Newborn from '@/app/services/newborn/newborn'
+import Newborn from './newborn'
 function page() {
   return (
     <>

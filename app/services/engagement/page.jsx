@@ -1,5 +1,5 @@
 import React from 'react'
-import Engagement from '@/app/services/engagement/engagement'
+import Engagement from './engagement'
 function page() {
   return (
     <>

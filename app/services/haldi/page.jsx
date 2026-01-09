@@ -1,5 +1,5 @@
 import React from 'react'
-import Haldi from '@/app/services/haldi/haldi'
+import Haldi from './haldi'
 function page() {
   return (
     <>

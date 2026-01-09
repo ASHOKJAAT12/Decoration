@@ -1,5 +1,5 @@
 import React from 'react'
-import Anniversary from '@/app/services/anniversary/anniversary';
+import Anniversary from './anniversary';
 function page() {
   return (
     <>
