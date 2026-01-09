@@ -15,7 +15,7 @@ export default function Navbar() {
   ]
 
   const services = [
-    { name: 'Birthday Decoration', href: '/services/birthday' },
+    { name: 'Birthday Decoration', href: '/services/Birthday' },
     { name: 'Anniversary Setup', href: '/services/anniversary' },
     { name: 'Kids Party', href: '/services/kids' },
     { name: 'Newborn Welcome', href: '/services/newborn' },
