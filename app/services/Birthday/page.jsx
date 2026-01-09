@@ -1,4 +1,4 @@
-import Birthday from '@/app/services/birthday/birthday';
+import Birthday from './birthday';
 function page() {
   return (
     <>
