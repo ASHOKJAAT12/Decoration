@@ -8,17 +8,21 @@ const seedData = async () => {
     try {
         await connectDB();
 
-        // Create default admin
-        const existingAdmin = await Admin.findOne({ email: 'admin@decoration.com' });
+        // Delete the old default admin if it exists
+        await Admin.findOneAndDelete({ email: 'admin@decoration.com' });
+
+        // Create new default admin
+        const adminEmail = 'ajat39963@gmail.com';
+        const existingAdmin = await Admin.findOne({ email: adminEmail });
         if (!existingAdmin) {
             await Admin.create({
                 name: 'Admin',
-                email: 'admin@decoration.com',
-                password: 'admin123',
+                email: adminEmail,
+                password: 'asta@king',
             });
             console.log('✅ Default admin created');
-            console.log('   Email: admin@decoration.com');
-            console.log('   Password: admin123');
+            console.log(`   Email: ${adminEmail}`);
+            console.log('   Password: asta@king');
         } else {
             console.log('ℹ️  Admin already exists');
         }

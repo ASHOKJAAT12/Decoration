@@ -32,10 +32,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    // Public pages (login, forgot-password, reset-password) — no sidebar
+    // Public pages (login, forgot-password, reset-password) — allow public Navbar to show
     if (isPublicPage) {
         return (
-            <div className="fixed inset-0 z-[100] bg-gray-950 text-white overflow-auto">
+            <div className="min-h-screen bg-gray-950 text-white">
                 <Toaster
                     position="top-right"
                     theme="dark"
@@ -52,9 +52,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    // Protected pages — with sidebar
+    // Protected pages — hide public Navbar with fixed overlay and fix double scrollbar
     return (
-        <div className="fixed inset-0 z-[100] bg-gray-950 text-white overflow-auto">
+        <div className="fixed inset-0 z-[100] bg-gray-950 text-white overflow-hidden">
             <Toaster
                 position="top-right"
                 theme="dark"
@@ -66,14 +66,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     },
                 }}
             />
-            <div className="flex min-h-screen">
-                <Sidebar />
-                <main className="flex-1 lg:ml-72">
-                    <div className="p-6 lg:p-8">
-                        {children}
-                    </div>
-                </main>
-            </div>
+            <Sidebar />
+            <main className="h-screen overflow-y-auto lg:ml-72 bg-gray-950">
+                <div className="p-6 lg:p-8 min-h-[calc(100vh-4rem)]">
+                    {children}
+                </div>
+            </main>
         </div>
     );
 }

@@ -27,7 +27,7 @@ export default function Sidebar() {
 
     const handleLogout = async () => {
         await authAPI.logout();
-        router.push('/admin/login');
+        router.push('/');
     };
 
     const NavContent = () => (
@@ -55,8 +55,8 @@ export default function Sidebar() {
                             href={item.href}
                             onClick={() => setIsMobileOpen(false)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
-                                    ? 'bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-white border border-violet-500/30'
-                                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                                ? 'bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-white border border-violet-500/30'
+                                : 'text-gray-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             <item.icon className={`w-5 h-5 ${isActive ? 'text-violet-400' : 'text-gray-500 group-hover:text-violet-400'}`} />
