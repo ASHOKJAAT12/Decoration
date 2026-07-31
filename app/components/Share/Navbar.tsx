@@ -3,11 +3,26 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, Balloon } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { getAccessToken, authAPI } from '@/lib/api'
+import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [hoverService, setHoverService] = useState(false)
-  
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    // Check auth status on mount and when it changes
+    setIsAdminLoggedIn(!!getAccessToken())
+  }, [])
+
+  const handleLogout = async () => {
+    await authAPI.logout()
+    setIsAdminLoggedIn(false)
+    router.push('/')
+  }
+
   const navItems = [
     { name: 'Home', href: '/' },
     // { name: 'About', href: '/about' },
@@ -30,7 +45,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className='flex items-center'>
-              <img src="/decoraforyou-logo.svg" alt="Logo" className="w-12 h-12 text-white"/>
+              <img src="/decoraforyou-logo.svg" alt="Logo" className="w-12 h-12 text-white" />
             </div>
             <span className="text-2xl font-bold bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
               DECORATION FOR YOU
@@ -40,8 +55,8 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-2 lg:space-x-8">
             {navItems.map((item) => (
-              <Link 
-                key={item.href} 
+              <Link
+                key={item.href}
                 href={item.href}
                 className="px-4 py-2 text-lg font-medium text-gray-700 hover:text-primary transition-colors duration-200 rounded-xl hover:bg-primary/10"
               >
@@ -50,13 +65,13 @@ export default function Navbar() {
             ))}
 
             {/* Services Dropdown */}
-            <div 
+            <div
               className="relative group"
               onMouseEnter={() => setHoverService(true)}
               onMouseLeave={() => setHoverService(false)}
             >
               <button className="flex items-center gap-2 px-4 py-2 text-lg font-semibold text-gray-800 hover:text-pink-500 rounded-xl hover:bg-pink-500/10 transition-all duration-200">
-                Services 
+                Services
                 <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
               </button>
 
@@ -71,7 +86,7 @@ export default function Navbar() {
                   >
                     <div className="space-y-2 px-4">
                       {services.map((service, index) => (
-                        <Link 
+                        <Link
                           key={service.href}
                           href={service.href}
                           className="group flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-500/10 transition-all cursor-pointer"
@@ -87,8 +102,8 @@ export default function Navbar() {
 
                     {/* All Services Button */}
                     <div className="px-4 pt-3 border-t border-gray-100">
-                      <Link 
-                        href="/services" 
+                      <Link
+                        href="/services"
                         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
                       >
                         <span>All Services</span>
@@ -99,17 +114,43 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Admin Controls */}
+            {isAdminLoggedIn ? (
+              <div className="flex flex-col md:flex-row items-center gap-2">
+                <Link
+                  href="/admin/dashboard"
+                  className="px-4 py-2 font-medium text-violet-600 bg-violet-50 rounded-xl hover:bg-violet-100 transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 font-medium text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/admin/login"
+                className="px-4 py-2 font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              >
+                Admin Login
+              </Link>
+            )}
+
             {/* CTA Button */}
-            <Link 
+            <Link
               href="/Contact"
-              className="px-6 py-3 bg-linear-to-r from-primary to-secondary text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              className="px-6 py-3 bg-linear-to-r from-primary to-secondary text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 ml-2"
             >
               Book Now
             </Link>
           </div>
 
           {/* Mobile menu button */}
-          <button 
+          <button
             className="md:hidden p-2 rounded-xl hover:bg-primary/10 transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
@@ -129,23 +170,52 @@ export default function Navbar() {
           >
             <div className="px-4 pt-4 pb-8 space-y-4 bg-white/50 backdrop-blur-xl border-t border-white/50">
               {navItems.map((item) => (
-                <Link 
-                  key={item.href} 
+                <Link
+                  key={item.href}
                   href={item.href}
                   className="block px-4 py-3 text-lg font-medium text-gray-700 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.name}
                 </Link>
-                
+
               ))}
               <Link
-                  href='/services'
-                  className="block px-4 py-3 text-lg font-medium text-gray-700 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Services
-                </Link>
+                href='/services'
+                className="block px-4 py-3 text-lg font-medium text-gray-700 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
+                onClick={() => setMobileOpen(false)}
+              >
+                Services
+              </Link>
+
+              {/* Mobile Admin Controls */}
+              <div className="pt-4 border-t border-gray-200">
+                {isAdminLoggedIn ? (
+                  <div className="space-y-4">
+                    <Link
+                      href="/admin/dashboard"
+                      className="block px-4 py-3 text-lg font-medium text-violet-600 hover:bg-violet-50 rounded-xl transition-all"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                    <button
+                      onClick={() => { setMobileOpen(false); handleLogout(); }}
+                      className="block w-full text-left px-4 py-3 text-lg font-medium text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <Link
+                    href="/admin/login"
+                    className="block px-4 py-3 text-lg font-medium text-gray-700 hover:bg-gray-100 rounded-xl transition-all"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    Admin Login
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         source: '/api/admin/:path*',
         destination: 'http://localhost:5000/api/admin/:path*',
       },
+      {
+        source: '/api/public/:path*',
+        destination: 'http://localhost:5000/api/public/:path*',
+      },
     ];
   },
   images: {

@@ -144,9 +144,43 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+// @desc    Get photos by event slug (Public)
+// @route   GET /api/public/events/:slug/photos
+const getPublicEventPhotos = async (req, res) => {
+    try {
+        const { slug } = req.params;
+
+        // Find the event by slug
+        const event = await Event.findOne({ slug });
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        // Get all photos for this event
+        const photos = await Photo.find({ eventId: event._id }).sort({ uploadedAt: -1 });
+
+        res.json({
+            event: {
+                id: event._id,
+                eventName: event.eventName,
+                slug: event.slug,
+                description: event.description,
+            },
+            photos: photos.map(p => ({
+                id: p._id,
+                imageUrl: p.imageUrl
+            })) // Only expose necessary data externally
+        });
+    } catch (error) {
+        console.error('Get public event photos error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 module.exports = {
     uploadPhotos,
     getPhotosByEvent,
     deletePhoto,
     getDashboardStats,
+    getPublicEventPhotos,
 };
