@@ -1,4 +1,5 @@
 const API_BASE = '/api/admin';
+const PUBLIC_BASE = '/api/public';
 
 interface FetchOptions extends RequestInit {
     skipAuth?: boolean;
@@ -139,7 +140,7 @@ export const authAPI = {
 };
 
 // ========================
-// Events API
+// Events API (Admin)
 // ========================
 export const eventsAPI = {
     getAll: async () => {
@@ -149,10 +150,20 @@ export const eventsAPI = {
         return data;
     },
 
-    create: async (eventName: string, description?: string) => {
+    create: async (formData: FormData) => {
         const res = await apiFetch('/events', {
             method: 'POST',
-            body: JSON.stringify({ eventName, description }),
+            body: formData,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        return data;
+    },
+
+    update: async (id: string, formData: FormData) => {
+        const res = await apiFetch(`/events/${id}`, {
+            method: 'PUT',
+            body: formData,
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
@@ -168,7 +179,7 @@ export const eventsAPI = {
 };
 
 // ========================
-// Photos API
+// Photos API (Admin)
 // ========================
 export const photosAPI = {
     getByEvent: async (eventId: string) => {
@@ -183,7 +194,6 @@ export const photosAPI = {
         formData.append('eventId', eventId);
         files.forEach((file) => formData.append('photos', file));
 
-        // Use XMLHttpRequest for progress tracking
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', `${API_BASE}/photos`);
@@ -229,11 +239,77 @@ export const photosAPI = {
 };
 
 // ========================
+// Gallery API (Admin)
+// ========================
+export const adminGalleryAPI = {
+    getAll: async () => {
+        const res = await apiFetch('/gallery');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        return data;
+    },
+
+    upload: async (files: File[], onProgress?: (percent: number) => void) => {
+        const formData = new FormData();
+        files.forEach((file) => formData.append('photos', file));
+
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', `${API_BASE}/gallery`);
+
+            const token = getAccessToken();
+            if (token) {
+                xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+            }
+
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable && onProgress) {
+                    onProgress(Math.round((e.loaded / e.total) * 100));
+                }
+            };
+
+            xhr.onload = () => {
+                const data = JSON.parse(xhr.responseText);
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    resolve(data);
+                } else {
+                    reject(new Error(data.message || 'Upload failed'));
+                }
+            };
+
+            xhr.onerror = () => reject(new Error('Network error'));
+            xhr.send(formData);
+        });
+    },
+
+    delete: async (id: string) => {
+        const res = await apiFetch(`/gallery/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        return data;
+    },
+};
+
+// ========================
 // Public API
 // ========================
 export const publicAPI = {
     getPhotosByEventSlug: async (slug: string) => {
-        const res = await fetch(`/api/public/events/${slug}/photos`);
+        const res = await fetch(`${PUBLIC_BASE}/events/${slug}/photos`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        return data;
+    },
+
+    getAllEvents: async () => {
+        const res = await fetch(`${PUBLIC_BASE}/events`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+        return data;
+    },
+
+    getGallery: async () => {
+        const res = await fetch(`${PUBLIC_BASE}/gallery`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
         return data;

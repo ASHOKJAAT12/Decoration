@@ -1,21 +1,45 @@
 'use client'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, Balloon } from 'lucide-react'
+import { Menu, X, ChevronDown } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { getAccessToken, authAPI } from '@/lib/api'
+import { getAccessToken, authAPI, publicAPI } from '@/lib/api'
 import { useRouter } from 'next/navigation'
+
+interface ServiceItem {
+  name: string;
+  href: string;
+}
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false)
   const [hoverService, setHoverService] = useState(false)
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false)
+  const [services, setServices] = useState<ServiceItem[]>([])
+  const [servicesLoading, setServicesLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    // Check auth status on mount and when it changes
     setIsAdminLoggedIn(!!getAccessToken())
+    fetchServices()
   }, [])
+
+  const fetchServices = async () => {
+    try {
+      const data = await publicAPI.getAllEvents()
+      setServices(
+        (data.events || []).map((e: { eventName: string; slug: string }) => ({
+          name: e.eventName,
+          href: `/services/${e.slug}`,
+        }))
+      )
+    } catch {
+      // silently fail – page still works without dropdown items
+    } finally {
+      setServicesLoading(false)
+    }
+  }
 
   const handleLogout = async () => {
     await authAPI.logout()
@@ -25,17 +49,7 @@ export default function Navbar() {
 
   const navItems = [
     { name: 'Home', href: '/' },
-    // { name: 'About', href: '/about' },
     { name: 'Contact us', href: '/Contact' }
-  ]
-
-  const services = [
-    { name: 'Birthday Decoration', href: '/services/Birthday' },
-    { name: 'Anniversary Setup', href: '/services/anniversary' },
-    { name: 'Kids Party', href: '/services/kids' },
-    { name: 'Newborn Welcome', href: '/services/newborn' },
-    { name: 'Festival', href: '/services/festival' },
-    { name: 'Engagement Party', href: '/services/engagement' }
   ]
 
   return (
@@ -75,36 +89,46 @@ export default function Navbar() {
                 <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
               </button>
 
-              {/* Dropdown Menu */}
               <AnimatePresence>
                 {hoverService && (
                   <motion.div
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 rounded-3xl py-4"
+                    className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl shadow-2xl border border-white/50 rounded-3xl py-4 max-h-96 overflow-y-auto"
                   >
-                    <div className="space-y-2 px-4">
-                      {services.map((service, index) => (
-                        <Link
-                          key={service.href}
-                          href={service.href}
-                          className="group flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-500/10 transition-all cursor-pointer"
-                        >
-                          <div>
-                            <div className="font-bold text-gray-800  transition-colors">
-                              {service.name}
+                    <div className="space-y-1 px-4">
+                      {servicesLoading ? (
+                        // Loading skeleton
+                        Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} className="h-11 rounded-2xl bg-gray-100 animate-pulse" />
+                        ))
+                      ) : services.length === 0 ? (
+                        <p className="text-sm text-gray-400 text-center py-4">No services available</p>
+                      ) : (
+                        services.map((service) => (
+                          <Link
+                            key={service.href}
+                            href={service.href}
+                            className="group flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-500/10 transition-all cursor-pointer"
+                            onClick={() => setHoverService(false)}
+                          >
+                            <div>
+                              <div className="font-bold text-gray-800 transition-colors">
+                                {service.name}
+                              </div>
                             </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        ))
+                      )}
                     </div>
 
                     {/* All Services Button */}
-                    <div className="px-4 pt-3 border-t border-gray-100">
+                    <div className="px-4 pt-3 border-t border-gray-100 mt-2">
                       <Link
                         href="/services"
                         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-2xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
+                        onClick={() => setHoverService(false)}
                       >
                         <span>All Services</span>
                         <ChevronDown className="w-4 h-4" />
@@ -168,7 +192,7 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden overflow-hidden"
           >
-            <div className="px-4 pt-4 pb-8 space-y-4 bg-white/50 backdrop-blur-xl border-t border-white/50">
+            <div className="px-4 pt-4 pb-8 space-y-2 bg-white/50 backdrop-blur-xl border-t border-white/50">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -178,20 +202,61 @@ export default function Navbar() {
                 >
                   {item.name}
                 </Link>
-
               ))}
-              <Link
-                href='/services'
-                className="block px-4 py-3 text-lg font-medium text-gray-700 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
-                onClick={() => setMobileOpen(false)}
-              >
-                Services
-              </Link>
+
+              {/* Mobile Services Accordion */}
+              <div>
+                <button
+                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                  className="w-full flex items-center justify-between px-4 py-3 text-lg font-medium text-gray-700 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
+                >
+                  Services
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileServicesOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {mobileServicesOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pl-4 space-y-1 pb-2">
+                        {servicesLoading ? (
+                          Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="h-10 rounded-xl bg-gray-100 animate-pulse" />
+                          ))
+                        ) : services.length === 0 ? (
+                          <p className="text-sm text-gray-400 px-4 py-2">No services available</p>
+                        ) : (
+                          services.map((service) => (
+                            <Link
+                              key={service.href}
+                              href={service.href}
+                              className="block px-4 py-2.5 text-base text-gray-600 hover:text-primary hover:bg-primary/10 rounded-xl transition-all"
+                              onClick={() => { setMobileOpen(false); setMobileServicesOpen(false); }}
+                            >
+                              {service.name}
+                            </Link>
+                          ))
+                        )}
+                        <Link
+                          href="/services"
+                          className="block px-4 py-2.5 text-base font-semibold text-pink-600 hover:bg-pink-50 rounded-xl transition-all"
+                          onClick={() => { setMobileOpen(false); setMobileServicesOpen(false); }}
+                        >
+                          View All Services →
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               {/* Mobile Admin Controls */}
               <div className="pt-4 border-t border-gray-200">
                 {isAdminLoggedIn ? (
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     <Link
                       href="/admin/dashboard"
                       className="block px-4 py-3 text-lg font-medium text-violet-600 hover:bg-violet-50 rounded-xl transition-all"

@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const photoRoutes = require('./routes/photoRoutes');
+const galleryRoutes = require('./routes/galleryRoutes');
 const publicRoutes = require('./routes/publicRoutes');
 
 const app = express();
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/admin', authRoutes);
 app.use('/api/admin/events', eventRoutes);
 app.use('/api/admin/photos', photoRoutes);
+app.use('/api/admin/gallery', galleryRoutes);
 app.use('/api/public', publicRoutes);
 
 // Health check
@@ -58,5 +60,6 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
     console.log(`\n🚀 Server running on port ${PORT}`);
     console.log(`   Health: http://localhost:${PORT}/api/health`);
-    console.log(`   Admin API: http://localhost:${PORT}/api/admin\n`);
+    console.log(`   Admin API: http://localhost:${PORT}/api/admin`);
+    console.log(`   Public API: http://localhost:${PORT}/api/public\n`);
 });

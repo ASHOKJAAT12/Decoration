@@ -7,6 +7,7 @@ import {
     LayoutDashboard,
     Images,
     ImagePlus,
+    Camera,
     LogOut,
     Menu,
     X,
@@ -18,6 +19,7 @@ const navItems = [
     { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/events', label: 'Manage Events', icon: Images },
     { href: '/admin/photos/add', label: 'Add Photos', icon: ImagePlus },
+    { href: '/admin/gallery', label: 'Gallery', icon: Camera },
 ];
 
 export default function Sidebar() {

@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, Eye, Search, Calendar, Images } from 'lucide-react';
+import { Plus, Trash2, Eye, Search, Calendar, Images, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { eventsAPI, photosAPI } from '@/lib/api';
 import ConfirmModal from '../components/ConfirmModal';
 import PhotoGrid from '../components/PhotoGrid';
@@ -14,6 +14,8 @@ interface Event {
     slug: string;
     description: string;
     photoCount: number;
+    coverImageUrl: string;
+    coverImagePublicId: string;
     createdAt: string;
 }
 
@@ -36,7 +38,13 @@ export default function EventsPage() {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newEventName, setNewEventName] = useState('');
     const [newEventDesc, setNewEventDesc] = useState('');
+    const [newCoverFile, setNewCoverFile] = useState<File | null>(null);
+    const [newCoverPreview, setNewCoverPreview] = useState<string>('');
     const [creating, setCreating] = useState(false);
+
+    // Cover image update state
+    const [updatingCoverId, setUpdatingCoverId] = useState<string | null>(null);
+    const coverInputRef = useRef<HTMLInputElement>(null);
 
     // Delete modals
     const [deleteEventModal, setDeleteEventModal] = useState<Event | null>(null);
@@ -74,6 +82,13 @@ export default function EventsPage() {
         }
     };
 
+    const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setNewCoverFile(file);
+        setNewCoverPreview(URL.createObjectURL(file));
+    };
+
     const handleCreateEvent = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newEventName.trim()) {
@@ -82,10 +97,17 @@ export default function EventsPage() {
         }
         setCreating(true);
         try {
-            await eventsAPI.create(newEventName, newEventDesc);
+            const formData = new FormData();
+            formData.append('eventName', newEventName);
+            formData.append('description', newEventDesc);
+            if (newCoverFile) formData.append('coverImage', newCoverFile);
+
+            await eventsAPI.create(formData);
             toast.success('Event created successfully!');
             setNewEventName('');
             setNewEventDesc('');
+            setNewCoverFile(null);
+            setNewCoverPreview('');
             setShowCreateForm(false);
             loadEvents();
         } catch (error: unknown) {
@@ -124,7 +146,7 @@ export default function EventsPage() {
             toast.success('Photo deleted successfully!');
             setPhotos(prev => prev.filter(p => p._id !== deletePhotoId));
             setDeletePhotoId(null);
-            loadEvents(); // Refresh counts
+            loadEvents();
         } catch (error: unknown) {
             const message = error instanceof Error ? error.message : 'Failed to delete photo';
             toast.error(message);
@@ -151,6 +173,27 @@ export default function EventsPage() {
             toast.error(message);
         } finally {
             setIsDeleting(false);
+        }
+    };
+
+    // Update cover image for a specific event
+    const handleUpdateCover = async (eventId: string, file: File | null, remove = false) => {
+        setUpdatingCoverId(eventId);
+        try {
+            const formData = new FormData();
+            if (remove) {
+                formData.append('removeCover', 'true');
+            } else if (file) {
+                formData.append('coverImage', file);
+            }
+            await eventsAPI.update(eventId, formData);
+            toast.success(remove ? 'Cover image removed!' : 'Cover image updated!');
+            loadEvents();
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Failed to update cover';
+            toast.error(message);
+        } finally {
+            setUpdatingCoverId(null);
         }
     };
 
@@ -207,7 +250,6 @@ export default function EventsPage() {
                     />
                 )}
 
-                {/* Delete Photo Modal */}
                 <ConfirmModal
                     isOpen={!!deletePhotoId}
                     title="Delete Photo"
@@ -218,7 +260,6 @@ export default function EventsPage() {
                     isLoading={isDeleting}
                 />
 
-                {/* Bulk Delete Modal */}
                 <ConfirmModal
                     isOpen={bulkDeleteIds.length > 0}
                     title={`Delete ${bulkDeleteIds.length} Photos`}
@@ -279,6 +320,32 @@ export default function EventsPage() {
                             />
                         </div>
                     </div>
+
+                    {/* Cover Image Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Cover Image (optional)</label>
+                        <div className="flex items-center gap-4">
+                            {newCoverPreview ? (
+                                <div className="relative w-24 h-20 rounded-xl overflow-hidden border border-white/10">
+                                    <img src={newCoverPreview} alt="Cover preview" className="w-full h-full object-cover" />
+                                    <button
+                                        type="button"
+                                        onClick={() => { setNewCoverFile(null); setNewCoverPreview(''); }}
+                                        className="absolute top-1 right-1 p-0.5 rounded-md bg-red-500/80 text-white hover:bg-red-500"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-700/50 border border-dashed border-white/20 text-gray-400 hover:border-violet-400 hover:text-violet-400 cursor-pointer transition-all">
+                                    <ImageIcon className="w-4 h-4" />
+                                    <span className="text-sm">Choose cover image</span>
+                                    <input type="file" accept="image/*" className="hidden" onChange={handleCoverFileChange} />
+                                </label>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="flex gap-2">
                         <button
                             type="submit"
@@ -326,42 +393,90 @@ export default function EventsPage() {
                     {filteredEvents.map((event) => (
                         <div
                             key={event._id}
-                            className="bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all group"
+                            className="bg-gray-800/50 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-all group"
                         >
-                            <div className="flex items-start justify-between mb-3">
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-semibold text-white truncate">{event.eventName}</h3>
-                                    {event.description && (
-                                        <p className="text-sm text-gray-400 mt-1 line-clamp-2">{event.description}</p>
+                            {/* Cover Image */}
+                            <div className="relative h-36 bg-gray-700/50">
+                                {event.coverImageUrl ? (
+                                    <img
+                                        src={event.coverImageUrl}
+                                        alt={event.eventName}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <ImageIcon className="w-10 h-10 text-gray-600" />
+                                    </div>
+                                )}
+                                {/* Cover image actions overlay */}
+                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <label className="px-3 py-1.5 rounded-lg bg-violet-500/80 text-white text-xs font-medium cursor-pointer hover:bg-violet-500 transition-colors flex items-center gap-1">
+                                        <Upload className="w-3 h-3" />
+                                        {event.coverImageUrl ? 'Change Cover' : 'Add Cover'}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            disabled={updatingCoverId === event._id}
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) handleUpdateCover(event._id, file);
+                                                e.target.value = '';
+                                            }}
+                                        />
+                                    </label>
+                                    {event.coverImageUrl && (
+                                        <button
+                                            onClick={() => handleUpdateCover(event._id, null, true)}
+                                            disabled={updatingCoverId === event._id}
+                                            className="px-3 py-1.5 rounded-lg bg-red-500/80 text-white text-xs font-medium hover:bg-red-500 transition-colors flex items-center gap-1 disabled:opacity-50"
+                                        >
+                                            <X className="w-3 h-3" />
+                                            Remove
+                                        </button>
+                                    )}
+                                    {updatingCoverId === event._id && (
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                     )}
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
-                                <span className="flex items-center gap-1">
-                                    <Images className="w-4 h-4" />
-                                    {event.photoCount} photos
-                                </span>
-                                <span className="flex items-center gap-1">
-                                    <Calendar className="w-4 h-4" />
-                                    {new Date(event.createdAt).toLocaleDateString()}
-                                </span>
-                            </div>
+                            <div className="p-5">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-lg font-semibold text-white truncate">{event.eventName}</h3>
+                                        {event.description && (
+                                            <p className="text-sm text-gray-400 mt-1 line-clamp-2">{event.description}</p>
+                                        )}
+                                    </div>
+                                </div>
 
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => loadPhotos(event)}
-                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-violet-500/20 text-violet-400 hover:bg-violet-500/30 font-medium text-sm transition-colors"
-                                >
-                                    <Eye className="w-4 h-4" />
-                                    View Photos
-                                </button>
-                                <button
-                                    onClick={() => setDeleteEventModal(event)}
-                                    className="px-3 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
+                                <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+                                    <span className="flex items-center gap-1">
+                                        <Images className="w-4 h-4" />
+                                        {event.photoCount} photos
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Calendar className="w-4 h-4" />
+                                        {new Date(event.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => loadPhotos(event)}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-violet-500/20 text-violet-400 hover:bg-violet-500/30 font-medium text-sm transition-colors"
+                                    >
+                                        <Eye className="w-4 h-4" />
+                                        View Photos
+                                    </button>
+                                    <button
+                                        onClick={() => setDeleteEventModal(event)}
+                                        className="px-3 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -372,7 +487,7 @@ export default function EventsPage() {
             <ConfirmModal
                 isOpen={!!deleteEventModal}
                 title="Delete Event"
-                message={`Are you sure you want to delete "${deleteEventModal?.eventName}"? This will also permanently delete all ${deleteEventModal?.photoCount || 0} photos from Cloudinary.`}
+                message={`Are you sure you want to delete "${deleteEventModal?.eventName}"? This will also permanently delete all ${deleteEventModal?.photoCount || 0} photos and the cover image from Cloudinary.`}
                 confirmLabel="Delete Everything"
                 onConfirm={handleDeleteEvent}
                 onCancel={() => setDeleteEventModal(null)}
