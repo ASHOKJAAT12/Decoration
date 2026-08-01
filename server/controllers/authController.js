@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const { sendEmail } = require('../services/emailService');
 const Admin = require('../models/Admin');
 
 // Generate JWT Access Token (15 minutes)
@@ -129,40 +129,27 @@ const forgotPassword = async (req, res) => {
       <p>If you didn't request this, please ignore this email.</p>
     `;
 
-        try {
-            // Try to send email
-            if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-                const transporter = nodemailer.createTransport({
-                    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-                    port: process.env.SMTP_PORT || 587,
-                    secure: false,
-                    auth: {
-                        user: process.env.SMTP_USER,
-                        pass: process.env.SMTP_PASS,
-                    },
-                });
+        const result = await sendEmail({
+            to: admin.email,
+            subject: 'Password Reset - Decoration Admin Panel',
+            html: message,
+        });
 
-                await transporter.sendMail({
-                    from: `"Decoration Admin" <${process.env.SMTP_USER}>`,
-                    to: admin.email,
-                    subject: 'Password Reset - Decoration Admin Panel',
-                    html: message,
-                });
-
-                res.json({ message: 'Password reset link sent to your email' });
-            } else {
-                // Log to console if SMTP not configured
+        if (!result.success) {
+            // If SMTP not configured, fall back to console log for development
+            if (result.error === 'SMTP credentials not configured') {
                 console.log('\n📧 Password Reset Link (SMTP not configured):');
                 console.log(`   ${resetUrl}\n`);
-                res.json({ message: 'Password reset link generated (check server console)' });
+                return res.json({ message: 'Password reset link generated (check server console)' });
             }
-        } catch (emailError) {
-            console.error('Email send error:', emailError);
+            // Real send failure — clear token and return error
             admin.resetPasswordToken = undefined;
             admin.resetPasswordExpire = undefined;
             await admin.save({ validateBeforeSave: false });
-            return res.status(500).json({ message: 'Failed to send reset email' });
+            return res.status(500).json({ message: 'Failed to send reset email. Please try again.' });
         }
+
+        res.json({ message: 'Password reset link sent to your email' });
     } catch (error) {
         console.error('Forgot password error:', error);
         res.status(500).json({ message: 'Server error' });
