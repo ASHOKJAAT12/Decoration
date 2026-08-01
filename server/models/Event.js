@@ -37,4 +37,7 @@ eventSchema.pre('save', function () {
     }
 });
 
+// Index for fast sorted listing (primary admin + public query pattern)
+eventSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Event', eventSchema);

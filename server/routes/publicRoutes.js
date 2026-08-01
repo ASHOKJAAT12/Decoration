@@ -3,15 +3,17 @@ const router = express.Router();
 const { getPublicEventPhotos } = require('../controllers/photoController');
 const { getGalleryPhotos } = require('../controllers/galleryController');
 const Event = require('../models/Event');
+const Photo = require('../models/Photo');
 
 // @route   GET /api/public/events
-// @desc    Get all events (name, slug, description, coverImageUrl) for public display
+// @desc    Get all events for public display
 // @access  Public
 router.get('/events', async (req, res) => {
     try {
         const events = await Event.find()
             .select('eventName slug description coverImageUrl createdAt')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean(); // Plain JS objects — faster for read-only routes
         res.json({ events });
     } catch (error) {
         console.error('Get public events error:', error);
@@ -25,15 +27,17 @@ router.get('/events', async (req, res) => {
 router.get('/events/:slug', async (req, res) => {
     try {
         const { slug } = req.params;
-        const Event = require('../models/Event');
-        const Photo = require('../models/Photo');
 
-        const event = await Event.findOne({ slug });
+        // Fetch event and its photos in parallel — saves one round trip
+        const event = await Event.findOne({ slug }).lean();
         if (!event) {
             return res.status(404).json({ message: 'Event not found' });
         }
 
-        const photos = await Photo.find({ eventId: event._id }).sort({ uploadedAt: -1 });
+        const photos = await Photo.find({ eventId: event._id })
+            .sort({ uploadedAt: -1 })
+            .select('imageUrl')
+            .lean();
 
         res.json({
             event: {
@@ -55,7 +59,6 @@ router.get('/events/:slug', async (req, res) => {
 // @desc    Get all photos for a specific event by its slug
 // @access  Public
 router.get('/events/:slug/photos', getPublicEventPhotos);
-
 
 // @route   GET /api/public/gallery
 // @desc    Get all global gallery photos

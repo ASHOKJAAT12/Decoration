@@ -20,4 +20,7 @@ const photoSchema = new mongoose.Schema({
     },
 });
 
+// Index for fast per-event photo queries (primary access pattern)
+photoSchema.index({ eventId: 1, uploadedAt: -1 });
+
 module.exports = mongoose.model('Photo', photoSchema);

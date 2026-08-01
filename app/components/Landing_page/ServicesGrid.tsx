@@ -30,10 +30,18 @@ export default function ServicesGrid() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
     publicAPI.getAllEvents()
-      .then((data) => setServices((data.events || []).slice(0, 4)))
-      .catch(() => {/* show empty state */ })
-      .finally(() => setIsLoading(false));
+      .then((data) => {
+        if (!controller.signal.aborted) {
+          setServices((data.events || []).slice(0, 4));
+        }
+      })
+      .catch(() => { })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsLoading(false);
+      });
+    return () => controller.abort();
   }, []);
 
   return (

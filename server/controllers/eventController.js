@@ -3,7 +3,7 @@ const Photo = require('../models/Photo');
 const cloudinary = require('../config/cloudinary');
 
 // Helper: upload a single buffer to Cloudinary
-async function uploadToCloudinary(buffer, folder, publicIdPrefix) {
+async function uploadToCloudinary(buffer, folder) {
     return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             {
@@ -24,14 +24,18 @@ async function uploadToCloudinary(buffer, folder, publicIdPrefix) {
 // @route   GET /api/admin/events
 const getEvents = async (req, res) => {
     try {
-        const events = await Event.find().sort({ createdAt: -1 });
+        const events = await Event.find().sort({ createdAt: -1 }).lean();
 
-        const eventsWithCounts = await Promise.all(
-            events.map(async (event) => {
-                const photoCount = await Photo.countDocuments({ eventId: event._id });
-                return { ...event.toObject(), photoCount };
-            })
-        );
+        // Single aggregation to get all photo counts — avoids N+1 DB queries
+        const counts = await Photo.aggregate([
+            { $group: { _id: '$eventId', count: { $sum: 1 } } }
+        ]);
+        const countMap = Object.fromEntries(counts.map(c => [c._id.toString(), c.count]));
+
+        const eventsWithCounts = events.map(event => ({
+            ...event,
+            photoCount: countMap[event._id.toString()] || 0,
+        }));
 
         res.json({ events: eventsWithCounts });
     } catch (error) {
@@ -52,7 +56,7 @@ const createEvent = async (req, res) => {
 
         const existing = await Event.findOne({
             eventName: { $regex: new RegExp(`^${eventName}$`, 'i') },
-        });
+        }).lean();
         if (existing) {
             return res.status(400).json({ message: 'An event with this name already exists' });
         }
@@ -98,7 +102,6 @@ const updateEvent = async (req, res) => {
 
         // Replace / add cover image
         if (req.file) {
-            // Destroy old cover if exists
             if (event.coverImagePublicId) {
                 try { await cloudinary.uploader.destroy(event.coverImagePublicId); } catch (_) { }
             }
@@ -127,26 +130,32 @@ const deleteEvent = async (req, res) => {
             return res.status(404).json({ message: 'Event not found' });
         }
 
-        // Delete cover image from Cloudinary
+        const photos = await Photo.find({ eventId: event._id }).lean();
+
+        // Delete all Cloudinary assets concurrently (parallel instead of serial loop)
+        const cloudinaryDeletes = [];
+
         if (event.coverImagePublicId) {
-            try { await cloudinary.uploader.destroy(event.coverImagePublicId); } catch (_) { }
+            cloudinaryDeletes.push(
+                cloudinary.uploader.destroy(event.coverImagePublicId).catch(() => { })
+            );
         }
 
-        // Delete all associated photos from Cloudinary
-        const photos = await Photo.find({ eventId: event._id });
         for (const photo of photos) {
-            try {
-                await cloudinary.uploader.destroy(photo.cloudinaryPublicId);
-            } catch (cloudErr) {
-                console.error(`Failed to delete from Cloudinary: ${photo.cloudinaryPublicId}`, cloudErr);
-            }
+            cloudinaryDeletes.push(
+                cloudinary.uploader.destroy(photo.cloudinaryPublicId).catch((err) => {
+                    console.error(`Failed to delete from Cloudinary: ${photo.cloudinaryPublicId}`, err.message);
+                })
+            );
         }
 
-        // Delete photos from DB
-        await Photo.deleteMany({ eventId: event._id });
+        await Promise.all(cloudinaryDeletes);
 
-        // Delete the event
-        await Event.findByIdAndDelete(req.params.id);
+        // Delete DB records
+        await Promise.all([
+            Photo.deleteMany({ eventId: event._id }),
+            Event.findByIdAndDelete(req.params.id),
+        ]);
 
         res.json({ message: 'Event and all associated photos deleted successfully' });
     } catch (error) {
