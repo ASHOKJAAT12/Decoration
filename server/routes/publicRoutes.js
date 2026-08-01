@@ -19,10 +19,43 @@ router.get('/events', async (req, res) => {
     }
 });
 
+// @route   GET /api/public/events/:slug
+// @desc    Get a single event and all its photos by slug
+// @access  Public
+router.get('/events/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const Event = require('../models/Event');
+        const Photo = require('../models/Photo');
+
+        const event = await Event.findOne({ slug });
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        const photos = await Photo.find({ eventId: event._id }).sort({ uploadedAt: -1 });
+
+        res.json({
+            event: {
+                id: event._id,
+                eventName: event.eventName,
+                slug: event.slug,
+                description: event.description,
+                coverImageUrl: event.coverImageUrl || null,
+            },
+            photos: photos.map(p => ({ id: p._id, imageUrl: p.imageUrl })),
+        });
+    } catch (error) {
+        console.error('Get single event error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // @route   GET /api/public/events/:slug/photos
 // @desc    Get all photos for a specific event by its slug
 // @access  Public
 router.get('/events/:slug/photos', getPublicEventPhotos);
+
 
 // @route   GET /api/public/gallery
 // @desc    Get all global gallery photos

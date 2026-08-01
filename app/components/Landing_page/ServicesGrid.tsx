@@ -31,7 +31,7 @@ export default function ServicesGrid() {
 
   useEffect(() => {
     publicAPI.getAllEvents()
-      .then((data) => setServices(data.events || []))
+      .then((data) => setServices((data.events || []).slice(0, 4)))
       .catch(() => {/* show empty state */ })
       .finally(() => setIsLoading(false));
   }, []);
