@@ -12,17 +12,17 @@ const seedData = async () => {
         await Admin.findOneAndDelete({ email: 'admin@decoration.com' });
 
         // Create new default admin
-        const adminEmail = 'ajat39963@gmail.com';
+        const adminEmail = process.env.ADMINEMAIL;
         const existingAdmin = await Admin.findOne({ email: adminEmail });
         if (!existingAdmin) {
             await Admin.create({
                 name: 'Admin',
                 email: adminEmail,
-                password: 'asta@king',
+                password: process.env.ADMINEMAIL_PASS,
             });
             console.log('✅ Default admin created');
             console.log(`   Email: ${adminEmail}`);
-            console.log('   Password: asta@king');
+            console.log('   Password: ');
         } else {
             console.log('ℹ️  Admin already exists');
         }
