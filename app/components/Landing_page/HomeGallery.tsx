@@ -12,7 +12,7 @@ interface GalleryPhoto {
 // Build a Cloudinary optimized URL
 function optimizedUrl(url: string) {
     if (!url.includes('res.cloudinary.com')) return url;
-    return url.replace('/upload/', '/upload/f_auto,q_auto,w_600/');
+    return url.replace('/upload/', '/upload/f_auto,q_auto,w_900/');
 }
 
 function GallerySkeleton() {
@@ -21,7 +21,7 @@ function GallerySkeleton() {
             {Array.from({ length: 8 }).map((_, i) => (
                 <div
                     key={i}
-                    className="flex-shrink-0 w-64 h-48 rounded-2xl bg-gray-200 animate-pulse"
+                    className="flex-shrink-0 w-96 h-72 rounded-2xl bg-gray-200 animate-pulse"
                 />
             ))}
         </div>
@@ -173,7 +173,7 @@ export default function HomeGallery() {
                     {displayPhotos.map((photo, idx) => (
                         <div
                             key={`${photo.id}-${idx}`}
-                            className="flex-shrink-0 w-64 h-48 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer group"
+                            className="flex-shrink-0 w-96 h-72 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer group"
                             onClick={() => setLightbox(photo.imageUrl)}
                         >
                             <img
